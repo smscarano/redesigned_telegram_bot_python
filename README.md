@@ -6,4 +6,7 @@
 
 ## CREATE .env FILE
 
-It has to look like ``TELEGRAM_BOT_TOKEN = 'yourtoken'``
+Place it in the root dir. It has to look like ``TELEGRAM_BOT_TOKEN = 'yourtoken'``
+
+## CREATE TELEGRAM BOT
+Follow this tutorial [Tutorial](https://www.alphr.com/telegram-create-bot/).
