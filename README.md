@@ -9,4 +9,4 @@
 Place it in the root dir. It has to look like ``TELEGRAM_BOT_TOKEN = 'yourtoken'``
 
 ## CREATE TELEGRAM BOT
-Follow this tutorial [Tutorial](https://www.alphr.com/telegram-create-bot/).
+Follow this [Tutorial](https://www.alphr.com/telegram-create-bot/).

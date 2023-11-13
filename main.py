@@ -32,22 +32,6 @@ def telegramRunningTest():
             return True
     return False
 
-def chromeRunnnigTest():
-    try:
-        google_chrome_title_string = "Google Chrome"
-        # Obtener todas las ventanas activas
-        windows = gw.getAllWindows()
-        for window in windows:
-            window_title = str(window.title).strip()
-            if(window_title != ''):
-                if google_chrome_title_string in window_title:
-                    return True
-        return False
-    
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
-    
 def get_partition_info():
     try:
         # Obtener la información sobre las particiones
