@@ -337,6 +337,22 @@ async def monitor_dataHandler(update: Update, context: ContextTypes.DEFAULT_TYPE
     except:
         print("Error:")
 
+async def screenSizeHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    try:
+        size = pyautogui.size()
+        await update.message.reply_text( str(size[0]) + " " + str(size[1]) )
+                
+    except:
+        print("Error:")
+
+async def clickCenterHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    try:
+        size = pyautogui.size()
+        pyautogui.moveTo(size[0]/2, size[1]/2)   
+        pyautogui.click()
+                
+    except:
+        print("Error:")
 
 username = get_os_username()
 print("telegram bot started by username " + username)
@@ -373,7 +389,9 @@ unsorted_handlers = {
     "monitor_data" : monitor_dataHandler,
     "contrast" : setContrastHandler,
     "luminance" : setLuminanceHandler,
-    "suspend" : suspendMonitorHandler
+    "suspend" : suspendMonitorHandler,
+    "size": screenSizeHandler,
+    "clickCenter" : clickCenterHandler
 }
 
 handlers = dict(sorted(unsorted_handlers.items(), key=lambda item: item[0]))
