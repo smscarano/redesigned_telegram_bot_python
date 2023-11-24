@@ -190,12 +190,17 @@ async def setLuminanceHandler(update: Update, context: ContextTypes.DEFAULT_TYPE
     luminance = int(parts[1])
     for monitor in get_monitors():
         with monitor:
-            monitor.set_contrast(luminance)
+            monitor.set_luminance(luminance)
 
-async def suspendMonitorHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def poweroffMonitorHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     for monitor in get_monitors():
         with monitor:
-             monitor.set_power_mode("suspend")
+             monitor.set_power_mode(4)
+
+async def poweronMonitorHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    for monitor in get_monitors():
+        with monitor:
+             monitor.set_power_mode(1)
 
  
 
@@ -362,7 +367,7 @@ async def clickHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
 async def doubleClickHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     try:
-        pyautogui.click(2)
+        pyautogui.click(2 , interval=0.1)
     except:
         print("Error:")
 
@@ -402,7 +407,8 @@ unsorted_handlers = {
     "monitor_data" : monitor_dataHandler,
     "contrast" : setContrastHandler,
     "luminance" : setLuminanceHandler,
-    "suspend" : suspendMonitorHandler,
+    "poweroffMonitor" : poweroffMonitorHandler,
+    "poweronMonitorHandler" : poweronMonitorHandler,
     "size": screenSizeHandler,
     "moveCenter" : moveCenterHandler,
     "click" : clickHandler,
