@@ -345,14 +345,27 @@ async def screenSizeHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) 
     except:
         print("Error:")
 
-async def clickCenterHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def moveCenterHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     try:
         size = pyautogui.size()
         pyautogui.moveTo(size[0]/2, size[1]/2)   
-        pyautogui.click()
+        #pyautogui.click()
                 
     except:
         print("Error:")
+
+async def clickHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    try:
+        pyautogui.click()
+    except:
+        print("Error:")
+
+async def doubleClickHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    try:
+        pyautogui.click(2)
+    except:
+        print("Error:")
+
 
 username = get_os_username()
 print("telegram bot started by username " + username)
@@ -391,7 +404,9 @@ unsorted_handlers = {
     "luminance" : setLuminanceHandler,
     "suspend" : suspendMonitorHandler,
     "size": screenSizeHandler,
-    "clickCenter" : clickCenterHandler
+    "moveCenter" : moveCenterHandler,
+    "click" : clickHandler,
+    "doubleClick" : doubleClickHandler
 }
 
 handlers = dict(sorted(unsorted_handlers.items(), key=lambda item: item[0]))
