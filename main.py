@@ -1,5 +1,3 @@
-#python -m PyInstaller --onefile --name telegram_bot_py.exe --clean main.py
-
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 import webbrowser
@@ -8,128 +6,9 @@ from dotenv import load_dotenv
 import os
 import subprocess
 import socket
-import psutil
-import datetime
-import pygetwindow as gw
 import time
 from monitorcontrol import get_monitors
-
-def get_os_username():
-    try:
-        username = os.getlogin() 
-        return username
-
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
     
-def telegramRunningTest():
-    processes = [proc.info for proc in psutil.process_iter(['name'])]
-    tele_bot_exe_name = "tele_py_bot.exe"
-    for process in processes:
-        process_name = str(process["name"]).strip()
-        if(tele_bot_exe_name == process_name):
-            return True
-    return False
-
-def get_partition_info():
-    try:
-        # Obtener la información sobre las particiones
-        partitions = psutil.disk_partitions()
-
-        partition_info = []
-
-        for partition in partitions:
-            partition_mountpoint = partition.mountpoint
-            partition_device = partition.device
-            # Obtener la información sobre el uso de la partición
-            usage = psutil.disk_usage(partition_mountpoint)
-
-            # Almacenar la información en un diccionario
-            partition_data = {
-                'name': partition_device,
-                'mountpoint': partition_mountpoint,
-                'total_size': format_memory_size(usage.total),
-                'used_size': format_memory_size(usage.used),
-                'free_size': format_memory_size(usage.free),
-                'percent_used': usage.percent
-            }
-
-            partition_info.append(partition_data)
-
-        return partition_info
-
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
-    
-def get_cpu_usage():
-    try:
-        # Obtener la información sobre el uso del CPU
-        cpu_usage = psutil.cpu_percent(interval=1)  # interval es el tiempo de espera en segundos
-
-        return cpu_usage
-
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
-    
-def get_memory_usage():
-    try:
-        # Obtener la información sobre el uso de memoria
-        memory_info = psutil.virtual_memory()
-
-        # Obtener la cantidad de memoria RAM utilizada en bytes
-        used_memory = memory_info.used
-
-        return used_memory
-
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
-
-def get_total_memory():
-    try:
-        # Obtener la información sobre la memoria
-        memory_info = psutil.virtual_memory()
-
-        # Obtener la cantidad total de memoria RAM instalada en bytes
-        total_memory = memory_info.total
-
-        return total_memory
-
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
-    
-def format_memory_size(size_in_bytes):
-    # Convertir bytes a kilobytes, megabytes o gigabytes según sea necesario
-    for unit in ['B', 'KB', 'MB', 'GB']:
-        if size_in_bytes < 1024.0:
-            return f"{size_in_bytes:.2f} {unit}"
-        size_in_bytes /= 1024.0
-
-def get_windows_uptime():
-    try:
-        # Obtener la información sobre el tiempo de actividad del sistema
-        uptime_seconds = psutil.boot_time()
-
-        # Calcular el tiempo de actividad en un formato legible
-        uptime_timedelta = datetime.datetime.now() - datetime.datetime.fromtimestamp(uptime_seconds)
-
-        # Obtener los componentes de horas, minutos y segundos
-        hours, remainder = divmod(uptime_timedelta.seconds, 3600)
-        minutes, seconds = divmod(remainder, 60)
-
-        # Crear un string formateado
-        uptime_string = f"{hours}h {minutes}m {seconds}s"
-        
-        return uptime_string
-
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
-
 def get_host_ip():
     try:
         # Get the host name of the machine
@@ -267,66 +146,6 @@ async def ipHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     except:
         print("Error:")
 
-async def uptimeUpHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    try:
-        uptime = str(get_windows_uptime())
-        await update.message.reply_text(uptime)
-    except:
-        print("Error:")
-
-async def systemInfoHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    try:
-        total_ram = format_memory_size(get_total_memory())
-        used_ram = format_memory_size(get_memory_usage())
-        reply_text_ram = str(used_ram) + " / " + str(total_ram) + " of memory used"
-
-        cpu_usage = get_cpu_usage()
-        reply_text_cpu = str(cpu_usage) + "% cpu usage"
-
-        partitions_info = get_partition_info()
-        new_line_char = '\n'
-        text_response = reply_text_ram + " " + reply_text_cpu + new_line_char
-        if partitions_info is not None:
-            for partition in partitions_info:
-                text_response += "Partición: " + partition['mountpoint'] + new_line_char
-                text_response += "Tamaño total: " + partition['total_size'] + new_line_char
-                text_response += "Espacio usado: " + partition['used_size'] + new_line_char
-                text_response += "Espacio libre: " + partition['free_size'] + new_line_char
-                text_response += "Porcentaje de uso: " + partition['percent_used'] + "%" + new_line_char
-        await update.message.reply_text(text_response)
-    except:
-        print("Error:")
-
-async def cpuInfoInfoHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    try:
-        cpu_usage = get_cpu_usage()
-        reply_text_cpu = str(cpu_usage) + "% cpu usage"
-        await update.message.reply_text(reply_text_cpu)
-
-    except:
-        print("Error:")
-
-async def memoryInfoInfoHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    try:
-        total_ram = format_memory_size(get_total_memory())
-        used_ram = format_memory_size(get_memory_usage())
-        reply_text_ram = str(used_ram) + " / " + str(total_ram) + " of memory used"
-        await update.message.reply_text(reply_text_ram)
-    except:
-        print("Error:")
-
-async def diskInfoInfoHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    try:
-        partitions_info = get_partition_info()
-        if partitions_info is not None:
-            for partition in partitions_info:
-                await update.message.reply_text(f"Partición: {partition['mountpoint']}")
-                await update.message.reply_text(f"Tamaño total: {partition['total_size']}")
-                await update.message.reply_text(f"Espacio usado: {partition['used_size']}")
-                await update.message.reply_text(f"Espacio libre: {partition['free_size']}")
-                await update.message.reply_text(f"Porcentaje de uso: {partition['percent_used']}%")
-    except:
-        print("Error:")
 
 async def monitor_dataHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     try:
@@ -350,14 +169,6 @@ async def screenSizeHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) 
     except:
         print("Error:")
 
-async def moveCenterHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    try:
-        size = pyautogui.size()
-        pyautogui.moveTo(size[0]/2, size[1]/2)   
-        #pyautogui.click()
-                
-    except:
-        print("Error:")
 
 async def clickHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     try:
@@ -372,8 +183,8 @@ async def doubleClickHandler(update: Update, context: ContextTypes.DEFAULT_TYPE)
         print("Error:")
 
 
-username = get_os_username()
-print("telegram bot started by username " + username)
+#username = get_os_username()
+print("telegram bot started")
 
 #load sensitive data from .env 
 #make sure not to push it to repo
@@ -392,14 +203,9 @@ unsorted_handlers = {
     "pause": pauseHandler,
     "poweroff": poweroffHandler,
     "reboot": rebootHandler,
-    "system_info" : systemInfoHandler,
     "up": volumeUpHandler,
-    "uptime": uptimeUpHandler,
     "url": urlHandler,
     "c" : sendKeyHandler,
-    "memory" : memoryInfoInfoHandler,
-    "disk" : diskInfoInfoHandler,
-    "cpu" : cpuInfoInfoHandler,
     "right" : rightHandler,
     "left" : lefttHandler,
     "previous" : previousHandler,
@@ -410,7 +216,6 @@ unsorted_handlers = {
     "poweroffMonitor" : poweroffMonitorHandler,
     "poweronMonitorHandler" : poweronMonitorHandler,
     "size": screenSizeHandler,
-    "moveCenter" : moveCenterHandler,
     "click" : clickHandler,
     "doubleClick" : doubleClickHandler
 }
