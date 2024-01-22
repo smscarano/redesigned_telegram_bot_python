@@ -105,7 +105,7 @@ async def nextHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     pyautogui.hotkey('shift', 'n')
 
 async def pauseHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    pyautogui.press('k')
+    pyautogui.press('space')
 
 async def fullHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     pyautogui.press('f')
