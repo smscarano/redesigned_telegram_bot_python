@@ -8,16 +8,38 @@ import subprocess
 import socket
 import time
 from monitorcontrol import get_monitors
-    
+import platform
+
+def get_operating_system():
+    try:
+        system_name = platform.system()
+        return system_name
+    except Exception as e:
+        print(f"Error getting operating system: {e}")
+        return None
+
+def get_username_linux():
+    try:
+        username = os.getenv('USER') or os.getenv('LOGNAME') or os.getenv('USERNAME')
+        return username
+    except Exception as e:
+        print(f"Error getting username on Linux: {e}")
+        return None
+
+def get_username_windows():
+    try:
+        username = os.getenv('USERNAME')
+        return username
+    except Exception as e:
+        print(f"Error getting username on Windows: {e}")
+        return None
+        
 def get_host_ip():
     try:
-        # Get the host name of the machine
-        host_name = socket.gethostname()
-
-        # Get the IP address associated with the host name
-        ip_address = socket.gethostbyname(host_name)
-
-        return ip_address
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip_addr = str(s.getsockname()[0])
+        return ip_addr
 
     except socket.error as e:
         print(f"Error: {e}")
@@ -32,13 +54,34 @@ def is_number_between_1_and_9(value):
         # If the conversion to an integer fails, it's not a number
         return False
 
+def print_colored_text(text, color_name):
+    try:
+        color_codes = {
+            "red": 31,
+            "green": 32,
+            "yellow": 33,
+            "blue": 34,
+            "magenta": 35,
+            "cyan": 36,
+            "white": 37
+        }
+
+        # Check if the specified color is in the dictionary
+        if color_name not in color_codes:
+            raise ValueError(f"Invalid color: {color_name}")
+
+        color_code = color_codes[color_name]
+
+        # Print colored text using ANSI escape codes
+        print(f"\033[{color_code}m{text}\033[0m")
+    except:
+        print("error calling print_colored_text()")
 
 async def sendListHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     global handlers
     try:
-        for comando, manejador in handlers.items():
-            full_command = '/' + comando
-            await update.message.reply_text(full_command)
+        command_list = '\n'.join([f'/{comando}' for comando, _ in handlers.items()])
+        await update.message.reply_text(command_list)
     except Exception as e:
         print(f"Error in sendListHandler: {e}")
 
@@ -233,16 +276,26 @@ async def doubleClickHandler(update: Update, context: ContextTypes.DEFAULT_TYPE)
         print("Error:")
 
 
-#username = get_os_username()
-print("telegram bot started")
+
 
 #load sensitive data from .env 
-#make sure not to push it to repo
-load_dotenv()
-  
-telegram_token = os.getenv("TELEGRAM_BOT_TOKEN")
+#make sure not to push .env to repo
 
-app = ApplicationBuilder().token(telegram_token).build()
+try:
+    load_dotenv()
+except:
+    print("error loading dotenv")
+
+try:
+    telegram_token = os.getenv("TELEGRAM_BOT_TOKEN")
+except:
+    print("error getting TELEGRAM_BOT_TOKEN env var")
+
+try:
+    # instantiate app
+    app = ApplicationBuilder().token(telegram_token).build()
+except:
+    print("error instantiatiating app")
 
 unsorted_handlers = {
     "close": closeWindowHandler,
@@ -251,8 +304,6 @@ unsorted_handlers = {
     "ip": ipHandler,
     "list": sendListHandler,
     "pause": pauseHandler,
-    #"poweroff": poweroffHandler,
-    #"reboot": rebootHandler,
     "up": volumeUpHandler,
     "url": urlHandler,
     "c" : sendKeyHandler,
@@ -260,21 +311,62 @@ unsorted_handlers = {
     "left" : leftHandler,
     "previous" : previousHandler,
     "next" : nextHandler,
+    "click" : clickHandler,
+    "doubleClick" : doubleClickHandler
+    # following needs sudo:
+    #"poweroff": poweroffHandler,
+    #"reboot": rebootHandler,
     #"monitor_data" : monitor_dataHandler,
     #"contrast" : setContrastHandler,
     #"luminance" : setLuminanceHandler,
     #"poweroffMonitor" : poweroffMonitorHandler,
     #"poweronMonitorHandler" : poweronMonitorHandler,
     #"size": screenSizeHandler,
-    "click" : clickHandler,
-    "doubleClick" : doubleClickHandler
 }
+
+
 
 # sort handlers list
 handlers = dict(sorted(unsorted_handlers.items(), key=lambda item: item[0]))
 
-#add command handlers
-for comando, manejador in handlers.items():
-    app.add_handler(CommandHandler(comando, manejador))
+# default console print color
+console_print_color = "cyan"
 
-app.run_polling()
+try:
+    #add command handlers
+    for comando, manejador in handlers.items():
+        app.add_handler(CommandHandler(comando, manejador))
+except:
+    print("error adding handlers")
+try:
+    operating_system = get_operating_system()
+
+    print("running on: ", end="")
+    print_colored_text(operating_system, console_print_color)
+    username = ''
+    if(operating_system == 'Linux'):
+        username = get_username_linux()
+        print("system username running app: ", end="")
+        print_colored_text(username, console_print_color)
+
+except:
+    print("error getting os")
+
+try:
+    host_ip_addr = get_host_ip()
+    print("host ip address: ", end="")
+    print_colored_text(host_ip_addr, console_print_color)
+
+except:
+    print("error getting host ip address ")
+
+print_colored_text("telegram bot started", "magenta")  
+
+try:
+    app.run_polling()
+except:
+    print("error run_polling()")
+
+
+
+#username = get_os_username()
