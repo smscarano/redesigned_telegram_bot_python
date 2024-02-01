@@ -38,3 +38,4 @@ Never push your token to your repository or share it.
    `/full` emulates pressing the 'f' key, which is the hotkey for YouTube and other software/sites fullscreen toggle.  
    `/up` emulates pressing the up key, which is the hotkey for increasing volume on YouTube and other software/sites.  
    `/down` opposite of `/up`.  
+   `/c` followed by a letter or word send a custom command that emulates that keypress or text. For example `/c f` emulates f keypress.  
