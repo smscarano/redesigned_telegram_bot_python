@@ -10,16 +10,16 @@ Replace the example string with your token.
 Never push your token to your repository or share it.
 
 
-## RUN
+## RUN SCRIPT
 ### On Windows:  
   * python main.py
 
 ### On Linux:  
   * python3 main.py 
 
-## USAGE
-Once the bot is running on your PC, chat with your bot using Telegram and send the command /list.  
-You should receive a message from the bot consisting of a list of available commands.
+## BOT USAGE
+   Once the bot is running on your PC, chat with your bot using Telegram and send the command /list.  
+   You should receive a message from the bot consisting of a list of available commands.  
 
 
 
