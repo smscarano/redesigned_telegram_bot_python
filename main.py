@@ -32,94 +32,144 @@ def is_number_between_1_and_9(value):
         # If the conversion to an integer fails, it's not a number
         return False
 
+
 async def sendListHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     global handlers
-    for comando, manejador in handlers.items():
-        full_command = '/' + comando
-        await update.message.reply_text(full_command)
+    try:
+        for comando, manejador in handlers.items():
+            full_command = '/' + comando
+            await update.message.reply_text(full_command)
+    except Exception as e:
+        print(f"Error in sendListHandler: {e}")
 
 async def urlHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    parts = update.message.text.split()
-    if( len(parts) < 2 ):
-        await update.message.reply_text("too short array ")
-        return False
-    url = parts[1]
-    url_length = len(url)
-    if( url_length < 12 ):
-        await update.message.reply_text("too short url " + str(url_length))
-        return False
-    time.sleep(2)
-    webbrowser.open(url)
+    try:
+        parts = update.message.text.split()
+        if len(parts) < 2:
+            await update.message.reply_text("too short array ")
+            return False
+        url = parts[1]
+        url_length = len(url)
+        if url_length < 12:
+            await update.message.reply_text("too short url " + str(url_length))
+            return False
+        time.sleep(2)
+        webbrowser.open(url)
+    except Exception as e:
+        await update.message.reply_text(f"Error in urlHandler: {e}")
 
 async def setContrastHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    parts = update.message.text.split()
-    if( len(parts) < 2 ):
-        await update.message.reply_text("too short array ")
-        return False
-    contrast = int(parts[1])
-    for monitor in get_monitors():
-        with monitor:
-            monitor.set_contrast(contrast)
+    try:
+        parts = update.message.text.split()
+        if len(parts) < 2:
+            await update.message.reply_text("too short array ")
+            return False
+        contrast = int(parts[1])
+        for monitor in get_monitors():
+            with monitor:
+                monitor.set_contrast(contrast)
+    except Exception as e:
+        await update.message.reply_text(f"Error in setContrastHandler: {e}")
 
 async def setLuminanceHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    parts = update.message.text.split()
-    if( len(parts) < 2 ):
-        await update.message.reply_text("too short array ")
-        return False
-    luminance = int(parts[1])
-    for monitor in get_monitors():
-        with monitor:
-            monitor.set_luminance(luminance)
+    try:
+        parts = update.message.text.split()
+        if len(parts) < 2:
+            await update.message.reply_text("too short array ")
+            return False
+        luminance = int(parts[1])
+        for monitor in get_monitors():
+            with monitor:
+                monitor.set_luminance(luminance)
+    except Exception as e:
+        await update.message.reply_text(f"Error in setLuminanceHandler: {e}")
 
 async def poweroffMonitorHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    for monitor in get_monitors():
-        with monitor:
-             monitor.set_power_mode(4)
+    try:
+        for monitor in get_monitors():
+            with monitor:
+                monitor.set_power_mode(4)
+    except Exception as e:
+        await update.message.reply_text(f"Error in poweroffMonitorHandler: {e}")
 
 async def poweronMonitorHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    for monitor in get_monitors():
-        with monitor:
-             monitor.set_power_mode(1)
+    try:
+        for monitor in get_monitors():
+            with monitor:
+                monitor.set_power_mode(1)
+    except Exception as e:
+        await update.message.reply_text(f"Error in poweronMonitorHandler: {e}")
+
 
  
 
 async def volumeUpHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    pyautogui.press('up')
+    try:
+        pyautogui.press('up')
+    except Exception as e:
+        print(f"Error in volumeUpHandler: {e}")
 
 async def volumeDownHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    pyautogui.press('down')
+    try:
+        pyautogui.press('down')
+    except Exception as e:
+        print(f"Error in volumeDownHandler: {e}")
 
 async def rightHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    pyautogui.press('right')
+    try:
+        pyautogui.press('right')
+    except Exception as e:
+        print(f"Error in rightHandler: {e}")
 
-async def lefttHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    pyautogui.press('left')
+async def leftHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    try:
+        pyautogui.press('left')
+    except Exception as e:
+        print(f"Error in leftHandler: {e}")
 
 async def closeWindowHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    pyautogui.hotkey('ctrl', 'w')
+    try:
+        pyautogui.hotkey('ctrl', 'w')
+    except Exception as e:
+        print(f"Error in closeWindowHandler: {e}")
 
 async def previousHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    pyautogui.hotkey('shift', 'p')
+    try:
+        pyautogui.hotkey('shift', 'p')
+    except Exception as e:
+        print(f"Error in previousHandler: {e}")
 
 async def nextHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    pyautogui.hotkey('shift', 'n')
+    try:
+        pyautogui.hotkey('shift', 'n')
+    except Exception as e:
+        print(f"Error in nextHandler: {e}")
 
 async def pauseHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    pyautogui.press('space')
+    try:
+        pyautogui.press('space')
+    except Exception as e:
+        print(f"Error in pauseHandler: {e}")
 
 async def fullHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    pyautogui.press('f')
+    try:
+        pyautogui.press('f')
+    except Exception as e:
+        print(f"Error in fullHandler: {e}")
 
 async def sendKeyHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    command_tmp = update.message.text.split()
-    command = command_tmp[1]
-    print("recieved command: " + str(command))
-    tab_n = is_number_between_1_and_9(command)
-    if(tab_n == True):
-        pyautogui.hotkey('ctrl', str(command))
-    else:
-        pyautogui.typewrite(command)
-        pyautogui.press('enter')
+    try:
+        command_tmp = update.message.text.split()
+        command = command_tmp[1]
+        print("received command: " + str(command))
+        tab_n = is_number_between_1_and_9(command)
+        if tab_n:
+            pyautogui.hotkey('ctrl', str(command))
+        else:
+            pyautogui.typewrite(command)
+            pyautogui.press('enter')
+    except Exception as e:
+        print(f"Error in sendKeyHandler: {e}")
 
 async def rebootHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     try:
@@ -201,25 +251,26 @@ unsorted_handlers = {
     "ip": ipHandler,
     "list": sendListHandler,
     "pause": pauseHandler,
-    "poweroff": poweroffHandler,
-    "reboot": rebootHandler,
+    #"poweroff": poweroffHandler,
+    #"reboot": rebootHandler,
     "up": volumeUpHandler,
     "url": urlHandler,
     "c" : sendKeyHandler,
     "right" : rightHandler,
-    "left" : lefttHandler,
+    "left" : leftHandler,
     "previous" : previousHandler,
     "next" : nextHandler,
-    "monitor_data" : monitor_dataHandler,
-    "contrast" : setContrastHandler,
-    "luminance" : setLuminanceHandler,
-    "poweroffMonitor" : poweroffMonitorHandler,
-    "poweronMonitorHandler" : poweronMonitorHandler,
-    "size": screenSizeHandler,
+    #"monitor_data" : monitor_dataHandler,
+    #"contrast" : setContrastHandler,
+    #"luminance" : setLuminanceHandler,
+    #"poweroffMonitor" : poweroffMonitorHandler,
+    #"poweronMonitorHandler" : poweronMonitorHandler,
+    #"size": screenSizeHandler,
     "click" : clickHandler,
     "doubleClick" : doubleClickHandler
 }
 
+# sort handlers list
 handlers = dict(sorted(unsorted_handlers.items(), key=lambda item: item[0]))
 
 #add command handlers
