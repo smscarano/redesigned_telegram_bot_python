@@ -4,10 +4,8 @@ import webbrowser
 import pyautogui
 from dotenv import load_dotenv
 import os
-import subprocess
 import socket
 import time
-from monitorcontrol import get_monitors
 import platform
 from datetime import datetime
 
@@ -15,8 +13,9 @@ from datetime import datetime
 
 options = {
     # default console print color
-    "console_print_color" : "cyan"
+    "console_print_color": "cyan"
 }
+
 
 def get_formatted_current_datetime():
     try:
@@ -31,7 +30,8 @@ def get_formatted_current_datetime():
     except Exception as e:
         print(f"Error in get_formatted_current_datetime: {e}")
         return None
-    
+
+
 def get_operating_system():
     try:
         system_name = platform.system()
@@ -40,11 +40,12 @@ def get_operating_system():
         print(f"Error getting operating system: {e}")
         return None
 
+
 # Get the Linux distribution information using distro module
 def get_linux_distro():
     try:
         import distro
-        
+
         # Format the information
         distro_name = distro.name().strip()
         distro_version = distro.version().strip()
@@ -55,23 +56,26 @@ def get_linux_distro():
 
     except Exception as e:
         return f"Error getting Linux distribution: {e}"
-    
+
+
 def get_username_linux():
     try:
-        username = os.getenv('USER') or os.getenv('LOGNAME') or os.getenv('USERNAME')
+        username = os.getenv("USER") or os.getenv("LOGNAME") or os.getenv("USERNAME")
         return username
     except Exception as e:
         print(f"Error getting username on Linux: {e}")
         return None
 
+
 def get_username_windows():
     try:
-        username = os.getenv('USERNAME')
+        username = os.getenv("USERNAME")
         return username
     except Exception as e:
         print(f"Error getting username on Windows: {e}")
         return None
-        
+
+
 def get_host_ip():
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -82,7 +86,8 @@ def get_host_ip():
     except socket.error as e:
         print(f"Error: {e}")
         return None
-    
+
+
 def is_number_between_1_and_9(value):
     try:
         num = int(value)
@@ -91,6 +96,7 @@ def is_number_between_1_and_9(value):
     except ValueError:
         # If the conversion to an integer fails, it's not a number
         return False
+
 
 def print_colored_text(text, color_name, bold=False):
     try:
@@ -101,7 +107,7 @@ def print_colored_text(text, color_name, bold=False):
             "blue": 34,
             "magenta": 35,
             "cyan": 36,
-            "white": 37
+            "white": 37,
         }
 
         # Check if the specified color is in the dictionary
@@ -123,10 +129,11 @@ def print_colored_text(text, color_name, bold=False):
 async def sendListHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     global handlers
     try:
-        command_list = '\n'.join([f'/{comando}' for comando, _ in handlers.items()])
+        command_list = "\n".join([f"/{comando}" for comando, _ in handlers.items()])
         await update.message.reply_text(command_list)
     except Exception as e:
         print(f"Error in sendListHandler: {e}")
+
 
 async def urlHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     try:
@@ -144,59 +151,71 @@ async def urlHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     except Exception as e:
         await update.message.reply_text(f"Error in urlHandler: {e}")
 
+
 async def volumeUpHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     try:
-        pyautogui.press('up')
+        pyautogui.press("up")
     except Exception as e:
         print(f"Error in volumeUpHandler: {e}")
 
+
 async def volumeDownHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     try:
-        pyautogui.press('down')
+        pyautogui.press("down")
     except Exception as e:
         print(f"Error in volumeDownHandler: {e}")
 
+
 async def rightHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     try:
-        pyautogui.press('right')
+        pyautogui.press("right")
     except Exception as e:
         print(f"Error in rightHandler: {e}")
 
+
 async def leftHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     try:
-        pyautogui.press('left')
+        pyautogui.press("left")
     except Exception as e:
         print(f"Error in leftHandler: {e}")
 
-async def closeWindowHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+
+async def closeWindowHandler(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
     try:
-        pyautogui.hotkey('ctrl', 'w')
+        pyautogui.hotkey("ctrl", "w")
     except Exception as e:
         print(f"Error in closeWindowHandler: {e}")
 
+
 async def previousHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     try:
-        pyautogui.hotkey('shift', 'p')
+        pyautogui.hotkey("shift", "p")
     except Exception as e:
         print(f"Error in previousHandler: {e}")
 
+
 async def nextHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     try:
-        pyautogui.hotkey('shift', 'n')
+        pyautogui.hotkey("shift", "n")
     except Exception as e:
         print(f"Error in nextHandler: {e}")
 
+
 async def pauseHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     try:
-        pyautogui.press('space')
+        pyautogui.press("space")
     except Exception as e:
         print(f"Error in pauseHandler: {e}")
 
+
 async def fullHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     try:
-        pyautogui.press('f')
+        pyautogui.press("f")
     except Exception as e:
         print(f"Error in fullHandler: {e}")
+
 
 async def sendKeyHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     try:
@@ -204,13 +223,14 @@ async def sendKeyHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         command = command_tmp[1]
         tab_n = is_number_between_1_and_9(command)
         if tab_n:
-            pyautogui.hotkey('ctrl', str(command))
+            pyautogui.hotkey("ctrl", str(command))
         else:
             pyautogui.typewrite(command)
-            pyautogui.press('enter')
+            pyautogui.press("enter")
     except Exception as e:
         print(f"Error in sendKeyHandler: {e}")
         await update.message.reply_text(str(e))
+
 
 async def ipHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     try:
@@ -223,8 +243,8 @@ async def ipHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def screenSizeHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     try:
         size = pyautogui.size()
-        await update.message.reply_text( str(size[0]) + " " + str(size[1]) )
-                
+        await update.message.reply_text(str(size[0]) + " " + str(size[1]))
+
     except:
         print("Error:")
 
@@ -235,15 +255,19 @@ async def clickHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     except:
         print("Error:")
 
-async def doubleClickHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+
+async def doubleClickHandler(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
     try:
-        pyautogui.click(2 , interval=0.1)
+        pyautogui.click(2, interval=0.1)
     except:
         print("Error:")
 
+
 # ... (after handlers are added)
-#load sensitive data from .env 
-#make sure not to push .env to repo
+# load sensitive data from .env
+# make sure not to push .env to repo
 try:
     load_dotenv()
 except:
@@ -271,28 +295,28 @@ unsorted_handlers = {
     "pause": pauseHandler,
     "up": volumeUpHandler,
     "url": urlHandler,
-    "c" : sendKeyHandler,
-    "right" : rightHandler,
-    "left" : leftHandler,
-    "previous" : previousHandler,
-    "next" : nextHandler,
-    "click" : clickHandler,
-    "doubleClick" : doubleClickHandler
+    "c": sendKeyHandler,
+    "right": rightHandler,
+    "left": leftHandler,
+    "previous": previousHandler,
+    "next": nextHandler,
+    "click": clickHandler,
+    "doubleClick": doubleClickHandler
     # following needs sudo:
-    #"poweroff": poweroffHandler,
-    #"reboot": rebootHandler,
-    #"monitor_data" : monitor_dataHandler,
-    #"contrast" : setContrastHandler,
-    #"luminance" : setLuminanceHandler,
-    #"poweroffMonitor" : poweroffMonitorHandler,
-    #"poweronMonitorHandler" : poweronMonitorHandler,
-    #"size": screenSizeHandler,
+    # "poweroff": poweroffHandler,
+    # "reboot": rebootHandler,
+    # "monitor_data" : monitor_dataHandler,
+    # "contrast" : setContrastHandler,
+    # "luminance" : setLuminanceHandler,
+    # "poweroffMonitor" : poweroffMonitorHandler,
+    # "poweronMonitorHandler" : poweronMonitorHandler,
+    # "size": screenSizeHandler,
 }
 
 # sorted handlers list
 handlers = dict(sorted(unsorted_handlers.items(), key=lambda item: item[0]))
 
-#add command handlers
+# add command handlers
 try:
     for command, handler in handlers.items():
         app.add_handler(CommandHandler(command, handler))
@@ -301,20 +325,22 @@ except:
 
 try:
     print("started at: ", end="")
-    print_colored_text(get_formatted_current_datetime() , "cyan", bold=True)
+    print_colored_text(get_formatted_current_datetime(), "cyan", bold=True)
 except:
     print("error printing get_formatted_current_datetime()")
 
 try:
     operating_system = get_operating_system()
     print("running on: ", end="")
-    print_colored_text(operating_system.upper(), options["console_print_color"], bold=True)
-    username = ''
-    if(operating_system == 'Linux'):
+    print_colored_text(
+        operating_system.upper(), options["console_print_color"], bold=True
+    )
+    username = ""
+    if operating_system == "Linux":
         distro_data = get_linux_distro()
         print("linux distribution: ", end="")
-        print_colored_text(distro_data, options["console_print_color"], bold=True) 
-        
+        print_colored_text(distro_data, options["console_print_color"], bold=True)
+
         username = get_username_linux()
         print("system username: ", end="")
         print_colored_text(username, options["console_print_color"], bold=True)
@@ -330,7 +356,7 @@ except:
     print("error getting host ip address ")
 
 bot_started_msg = "telegram bot started"
-print_colored_text(bot_started_msg.upper()  , "green", bold=True)  
+print_colored_text(bot_started_msg.upper(), "green", bold=True)
 
 try:
     app.run_polling()
