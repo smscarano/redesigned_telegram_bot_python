@@ -11,6 +11,13 @@ from monitorcontrol import get_monitors
 import platform
 from datetime import datetime
 
+# options list
+
+options = {
+    # default console print color
+    "console_print_color" : "cyan"
+}
+
 def get_formatted_current_datetime():
     try:
         # Get current date and time
@@ -33,11 +40,10 @@ def get_operating_system():
         print(f"Error getting operating system: {e}")
         return None
 
+# Get the Linux distribution information using distro module
 def get_linux_distro():
     try:
         import distro
-
-        # Get the Linux distribution information using distro module
         
         # Format the information
         distro_name = distro.name().strip()
@@ -86,7 +92,7 @@ def is_number_between_1_and_9(value):
         # If the conversion to an integer fails, it's not a number
         return False
 
-def print_colored_text(text, color_name):
+def print_colored_text(text, color_name, bold=False):
     try:
         color_codes = {
             "red": 31,
@@ -104,10 +110,15 @@ def print_colored_text(text, color_name):
 
         color_code = color_codes[color_name]
 
+        # Add bold style if bold is True
+        bold_code = "1" if bold else ""
+
         # Print colored text using ANSI escape codes
-        print(f"\033[{color_code}m{text}\033[0m")
+        print(f"\033[{bold_code};{color_code}m{text}\033[0m")
+
     except:
-        print("error calling print_colored_text()")
+        print("Error calling print_colored_text()")
+
 
 async def sendListHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     global handlers
@@ -132,51 +143,6 @@ async def urlHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         webbrowser.open(url)
     except Exception as e:
         await update.message.reply_text(f"Error in urlHandler: {e}")
-
-async def setContrastHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    try:
-        parts = update.message.text.split()
-        if len(parts) < 2:
-            await update.message.reply_text("too short array ")
-            return False
-        contrast = int(parts[1])
-        for monitor in get_monitors():
-            with monitor:
-                monitor.set_contrast(contrast)
-    except Exception as e:
-        await update.message.reply_text(f"Error in setContrastHandler: {e}")
-
-async def setLuminanceHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    try:
-        parts = update.message.text.split()
-        if len(parts) < 2:
-            await update.message.reply_text("too short array ")
-            return False
-        luminance = int(parts[1])
-        for monitor in get_monitors():
-            with monitor:
-                monitor.set_luminance(luminance)
-    except Exception as e:
-        await update.message.reply_text(f"Error in setLuminanceHandler: {e}")
-
-async def poweroffMonitorHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    try:
-        for monitor in get_monitors():
-            with monitor:
-                monitor.set_power_mode(4)
-    except Exception as e:
-        await update.message.reply_text(f"Error in poweroffMonitorHandler: {e}")
-
-async def poweronMonitorHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    try:
-        for monitor in get_monitors():
-            with monitor:
-                monitor.set_power_mode(1)
-    except Exception as e:
-        await update.message.reply_text(f"Error in poweronMonitorHandler: {e}")
-
-
- 
 
 async def volumeUpHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     try:
@@ -246,24 +212,6 @@ async def sendKeyHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         print(f"Error in sendKeyHandler: {e}")
         await update.message.reply_text(str(e))
 
-async def rebootHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    try:
-        command = 'shutdown /r /f /t 0'
-        result = subprocess.run(command, check=True, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    except subprocess.CalledProcessError as e:
-        # Handle the case when the command returns a non-zero exit code
-        print("Error:")
-        print(e.stderr)
-
-async def poweroffHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    try:
-        command = 'shutdown /s /f /t 0'
-        result = subprocess.run(command, check=True, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    except subprocess.CalledProcessError as e:
-        # Handle the case when the command returns a non-zero exit code
-        print("Error:")
-        print(e.stderr)
-
 async def ipHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     try:
         ip_address = str(get_host_ip())
@@ -271,20 +219,6 @@ async def ipHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     except:
         print("Error:")
 
-
-async def monitor_dataHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    try:
-        for monitor in get_monitors():
-            with monitor:
-                contast = "contast: " + str(monitor.get_contrast())
-                luminance = "luminance: " + str(monitor.get_luminance())
-                power_mode = "power_mode: " + str(monitor.get_power_mode())
-                await update.message.reply_text(contast)
-                await update.message.reply_text(luminance)
-                await update.message.reply_text(power_mode)
-                
-    except:
-        print("Error:")
 
 async def screenSizeHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     try:
@@ -307,6 +241,9 @@ async def doubleClickHandler(update: Update, context: ContextTypes.DEFAULT_TYPE)
     except:
         print("Error:")
 
+
+
+# ... (after handlers are added)
 #load sensitive data from .env 
 #make sure not to push .env to repo
 try:
@@ -322,6 +259,7 @@ except:
 # instantiate app
 try:
     app = ApplicationBuilder().token(telegram_token).build()
+
 except:
     print("error instantiatiating app")
 
@@ -353,53 +291,51 @@ unsorted_handlers = {
     #"size": screenSizeHandler,
 }
 
-# sort handlers list
+# sorted handlers list
 handlers = dict(sorted(unsorted_handlers.items(), key=lambda item: item[0]))
-
-# default console print color
-console_print_color = "cyan"
 
 #add command handlers
 try:
-    for comando, manejador in handlers.items():
-        app.add_handler(CommandHandler(comando, manejador))
+    for command, handler in handlers.items():
+        app.add_handler(CommandHandler(command, handler))
 except:
     print("error adding handlers")
 
 try:
     print("started at: ", end="")
-    print_colored_text(get_formatted_current_datetime() , "cyan")
+    print_colored_text(get_formatted_current_datetime() , "cyan", bold=True)
 except:
     print("error printing get_formatted_current_datetime()")
 
 try:
     operating_system = get_operating_system()
     print("running on: ", end="")
-    print_colored_text(operating_system.upper(), console_print_color)
+    print_colored_text(operating_system.upper(), options["console_print_color"], bold=True)
     username = ''
     if(operating_system == 'Linux'):
         distro_data = get_linux_distro()
         print("linux distribution: ", end="")
-        print_colored_text(distro_data, console_print_color) 
+        print_colored_text(distro_data, options["console_print_color"], bold=True) 
         
         username = get_username_linux()
         print("system username: ", end="")
-        print_colored_text(username, console_print_color)
+        print_colored_text(username, options["console_print_color"], bold=True)
 except:
     print("error getting os")
 
 try:
     host_ip_addr = get_host_ip()
     print("host ip address: ", end="")
-    print_colored_text(host_ip_addr, console_print_color)
+    print_colored_text(host_ip_addr, options["console_print_color"], bold=True)
 
 except:
     print("error getting host ip address ")
 
 bot_started_msg = "telegram bot started"
-print_colored_text(bot_started_msg.upper()  , "green")  
+print_colored_text(bot_started_msg.upper()  , "green", bold=True)  
+
 
 try:
     app.run_polling()
 except:
-    print_colored_text("error run_polling()", "red")  
+    print_colored_text("error run_polling()", "red")
