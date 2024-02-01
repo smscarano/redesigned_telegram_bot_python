@@ -11,11 +11,11 @@ Never push your token to your repository or share it.
 
 
 ## RUN
-On Windows:  
-python main.py
+### On Windows:  
+  * python main.py
 
-On Linux:  
-python3 main.py 
+### On Linux:  
+  * python3 main.py 
 
 ## USAGE
 Once the bot is running on your PC, chat with your bot using Telegram and send the command /list.  
