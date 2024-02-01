@@ -27,8 +27,8 @@ Never push your token to your repository or share it.
   * python3 main.py 
 
 ## BOT USAGE
-   Once the bot is running on your PC, chat with your bot using Telegram and send the command `/list`.  
-   You should receive a message from the bot consisting of a list of available commands.  
+   Once the bot is running on your PC, chat with your bot using Telegram and send the command you want.  
+   After sending `/list` you should receive a message from the bot consisting of a list of available commands.  
 
 ## EXAMPLES
    `/list` you'll recieve a telegram message from the bot with a list of available commands.  
