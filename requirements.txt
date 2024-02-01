@@ -2,3 +2,4 @@ monitorcontrol
 python-telegram-bot 
 pyautogui
 python-dotenv
+distro

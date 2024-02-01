@@ -9,7 +9,22 @@ import socket
 import time
 from monitorcontrol import get_monitors
 import platform
+from datetime import datetime
 
+def get_formatted_current_datetime():
+    try:
+        # Get current date and time
+        current_datetime = datetime.now()
+
+        # Format the date and time as dd/mm/yyyy hh:mm:ss
+        formatted_datetime = current_datetime.strftime("%d/%m/%Y %H:%M:%S")
+
+        return formatted_datetime
+
+    except Exception as e:
+        print(f"Error in get_formatted_current_datetime: {e}")
+        return None
+    
 def get_operating_system():
     try:
         system_name = platform.system()
@@ -18,6 +33,23 @@ def get_operating_system():
         print(f"Error getting operating system: {e}")
         return None
 
+def get_linux_distro():
+    try:
+        import distro
+
+        # Get the Linux distribution information using distro module
+        
+        # Format the information
+        distro_name = distro.name().strip()
+        distro_version = distro.version().strip()
+        distro_id = distro.id().strip()
+
+        # Return the formatted string
+        return f"{distro_name} {distro_version} ({distro_id})"
+
+    except Exception as e:
+        return f"Error getting Linux distribution: {e}"
+    
 def get_username_linux():
     try:
         username = os.getenv('USER') or os.getenv('LOGNAME') or os.getenv('USERNAME')
@@ -204,7 +236,6 @@ async def sendKeyHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     try:
         command_tmp = update.message.text.split()
         command = command_tmp[1]
-        print("received command: " + str(command))
         tab_n = is_number_between_1_and_9(command)
         if tab_n:
             pyautogui.hotkey('ctrl', str(command))
@@ -213,6 +244,7 @@ async def sendKeyHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             pyautogui.press('enter')
     except Exception as e:
         print(f"Error in sendKeyHandler: {e}")
+        await update.message.reply_text(str(e))
 
 async def rebootHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     try:
@@ -275,12 +307,8 @@ async def doubleClickHandler(update: Update, context: ContextTypes.DEFAULT_TYPE)
     except:
         print("Error:")
 
-
-
-
 #load sensitive data from .env 
 #make sure not to push .env to repo
-
 try:
     load_dotenv()
 except:
@@ -291,12 +319,13 @@ try:
 except:
     print("error getting TELEGRAM_BOT_TOKEN env var")
 
+# instantiate app
 try:
-    # instantiate app
     app = ApplicationBuilder().token(telegram_token).build()
 except:
     print("error instantiatiating app")
 
+# handlers list
 unsorted_handlers = {
     "close": closeWindowHandler,
     "down": volumeDownHandler,
@@ -324,31 +353,38 @@ unsorted_handlers = {
     #"size": screenSizeHandler,
 }
 
-
-
 # sort handlers list
 handlers = dict(sorted(unsorted_handlers.items(), key=lambda item: item[0]))
 
 # default console print color
 console_print_color = "cyan"
 
+#add command handlers
 try:
-    #add command handlers
     for comando, manejador in handlers.items():
         app.add_handler(CommandHandler(comando, manejador))
 except:
     print("error adding handlers")
+
+try:
+    print("started at: ", end="")
+    print_colored_text(get_formatted_current_datetime() , "cyan")
+except:
+    print("error printing get_formatted_current_datetime()")
+
 try:
     operating_system = get_operating_system()
-
     print("running on: ", end="")
-    print_colored_text(operating_system, console_print_color)
+    print_colored_text(operating_system.upper(), console_print_color)
     username = ''
     if(operating_system == 'Linux'):
+        distro_data = get_linux_distro()
+        print("linux distribution: ", end="")
+        print_colored_text(distro_data, console_print_color) 
+        
         username = get_username_linux()
-        print("system username running app: ", end="")
+        print("system username: ", end="")
         print_colored_text(username, console_print_color)
-
 except:
     print("error getting os")
 
@@ -360,13 +396,10 @@ try:
 except:
     print("error getting host ip address ")
 
-print_colored_text("telegram bot started", "magenta")  
+bot_started_msg = "telegram bot started"
+print_colored_text(bot_started_msg.upper()  , "green")  
 
 try:
     app.run_polling()
 except:
-    print("error run_polling()")
-
-
-
-#username = get_os_username()
+    print_colored_text("error run_polling()", "red")  
