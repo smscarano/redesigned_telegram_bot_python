@@ -1,3 +1,5 @@
+import subprocess
+from monitorcontrol import get_monitors
 
 
 async def rebootHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

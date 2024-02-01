@@ -13,9 +13,51 @@ from datetime import datetime
 
 options = {
     # default console print color
-    "console_print_color": "cyan"
+    "console_print_color": "yellow"
 }
 
+
+def osData():
+    try:
+        operating_system = get_operating_system()
+        print("host os: ", end="")
+        print_colored_text(
+            operating_system.upper(), options["console_print_color"], bold=True
+        )
+        username = ""
+        if operating_system == "Linux":
+            distro_data = get_linux_distro()
+            print("linux distribution: ", end="")
+            print_colored_text(distro_data, options["console_print_color"], bold=True)
+
+            username = get_username_linux()
+            print("system username: ", end="")
+            print_colored_text(username, options["console_print_color"], bold=True)
+    except:
+        print("error getting os")
+
+def initDataPrint():
+    try:
+        print("started at: ", end="")
+        print_colored_text(get_formatted_current_datetime(), options["console_print_color"], bold=True)
+    except:
+        print("error printing get_formatted_current_datetime()")
+
+    try:
+        osData()
+    except:
+        print("error running osData()")
+
+    try:
+        host_ip_addr = get_host_ip()
+        print("host ip address: ", end="")
+        print_colored_text(host_ip_addr, options["console_print_color"], bold=True)
+
+    except:
+        print("error getting host ip address ")
+
+    bot_started_msg = "telegram bot started"
+    print_colored_text(bot_started_msg.upper(), "green", bold=True)
 
 def get_formatted_current_datetime():
     try:
@@ -52,7 +94,9 @@ def get_linux_distro():
         distro_id = distro.id().strip()
 
         # Return the formatted string
-        return f"{distro_name} {distro_version} ({distro_id})"
+        return f"{distro_name} {distro_version}"
+
+#        return f"{distro_name} {distro_version} ({distro_id})"
 
     except Exception as e:
         return f"Error getting Linux distribution: {e}"
@@ -109,7 +153,6 @@ def print_colored_text(text, color_name, bold=False):
             "cyan": 36,
             "white": 37,
         }
-
         # Check if the specified color is in the dictionary
         if color_name not in color_codes:
             raise ValueError(f"Invalid color: {color_name}")
@@ -324,39 +367,9 @@ except:
     print("error adding handlers")
 
 try:
-    print("started at: ", end="")
-    print_colored_text(get_formatted_current_datetime(), "cyan", bold=True)
+    initDataPrint()
 except:
-    print("error printing get_formatted_current_datetime()")
-
-try:
-    operating_system = get_operating_system()
-    print("running on: ", end="")
-    print_colored_text(
-        operating_system.upper(), options["console_print_color"], bold=True
-    )
-    username = ""
-    if operating_system == "Linux":
-        distro_data = get_linux_distro()
-        print("linux distribution: ", end="")
-        print_colored_text(distro_data, options["console_print_color"], bold=True)
-
-        username = get_username_linux()
-        print("system username: ", end="")
-        print_colored_text(username, options["console_print_color"], bold=True)
-except:
-    print("error getting os")
-
-try:
-    host_ip_addr = get_host_ip()
-    print("host ip address: ", end="")
-    print_colored_text(host_ip_addr, options["console_print_color"], bold=True)
-
-except:
-    print("error getting host ip address ")
-
-bot_started_msg = "telegram bot started"
-print_colored_text(bot_started_msg.upper(), "green", bold=True)
+    print("error initDataPrint()")
 
 try:
     app.run_polling()
