@@ -241,8 +241,6 @@ async def doubleClickHandler(update: Update, context: ContextTypes.DEFAULT_TYPE)
     except:
         print("Error:")
 
-
-
 # ... (after handlers are added)
 #load sensitive data from .env 
 #make sure not to push .env to repo
@@ -333,7 +331,6 @@ except:
 
 bot_started_msg = "telegram bot started"
 print_colored_text(bot_started_msg.upper()  , "green", bold=True)  
-
 
 try:
     app.run_polling()
