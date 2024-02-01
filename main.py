@@ -91,12 +91,9 @@ def get_linux_distro():
         # Format the information
         distro_name = distro.name().strip()
         distro_version = distro.version().strip()
-        distro_id = distro.id().strip()
 
         # Return the formatted string
         return f"{distro_name} {distro_version}"
-
-#        return f"{distro_name} {distro_version} ({distro_id})"
 
     except Exception as e:
         return f"Error getting Linux distribution: {e}"
@@ -307,7 +304,6 @@ async def doubleClickHandler(
     except:
         print("Error:")
 
-
 # ... (after handlers are added)
 # load sensitive data from .env
 # make sure not to push .env to repo
@@ -373,5 +369,6 @@ except:
 
 try:
     app.run_polling()
-except:
+except Exception as e:
     print_colored_text("error run_polling()", "red")
+    print_colored_text(str(e), "red")
