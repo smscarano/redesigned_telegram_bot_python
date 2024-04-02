@@ -7,7 +7,7 @@ import os
 import socket
 import time
 import platform
-from datetime import datetime
+from datetime import datetime,timedelta
 
 # options list
 
@@ -16,6 +16,7 @@ options = {
     "console_print_color": "yellow"
 }
 
+script_start_datetime = datetime.now()
 
 def osData():
     try:
@@ -256,6 +257,25 @@ async def fullHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     except Exception as e:
         print(f"Error in fullHandler: {e}")
 
+async def poweroffHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    try:
+        global script_start_datetime
+        # Get the current datetime
+        current_datetime = datetime.now()
+
+        # Assuming script_start_datetime is defined somewhere earlier
+        # Calculate the elapsed time since script_start_datetime
+        elapsed_time = current_datetime - script_start_datetime
+
+        # Check if 10 seconds have passed since script started
+        if elapsed_time >= timedelta(seconds=10):
+            operating_system = get_operating_system()
+            if operating_system == "Linux":
+                print("poweroff")
+                os.system('sudo poweroff')
+
+    except Exception as e:
+        print(f"Error in poweroffHandler: {e}")
 
 async def sendKeyHandler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     try:
@@ -340,9 +360,10 @@ unsorted_handlers = {
     "previous": previousHandler,
     "next": nextHandler,
     "click": clickHandler,
-    "doubleClick": doubleClickHandler
+    "doubleClick": doubleClickHandler,
+    
     # following needs sudo:
-    # "poweroff": poweroffHandler,
+    "poweroff": poweroffHandler
     # "reboot": rebootHandler,
     # "monitor_data" : monitor_dataHandler,
     # "contrast" : setContrastHandler,
